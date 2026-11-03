@@ -319,9 +319,9 @@ flowchart LR
 | Process | Main States | Key Gate |
 |---|---|---|
 | Provider Verification | DRAFT, PENDING_VERIFICATION, VERIFIED, REJECTED, SUSPENDED | Only VERIFIED + active is eligible. |
-| Service Request | DRAFT, CONFIRMED, SEARCHING_PROVIDERS, PROVIDERS_FOUND, PROVIDER_SELECTED, CANCELLED | Confirmation creates immutable request version. |
+| Service Request | DRAFT, CONFIRMED, PROVIDERS_FOUND, PROVIDER_SELECTED, CANCELLED | Confirmation creates immutable request version. |
 | Quotation | DRAFT, SUBMITTED, ACCEPTED, REJECTED, WITHDRAWN, EXPIRED | Only active SUBMITTED quotation may be accepted. |
-| Booking | PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED | Invalid transition is rejected. |
+| Booking | CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED | Invalid transition is rejected. |
 | Payment Record | PENDING, RECORDED, FAILED | Callback/result is idempotent. |
 | Review | PUBLISHED, HIDDEN | One eligible review per completed booking. |
 | AI Recommendation Run | QUEUED, RUNNING, COMPLETED, FAILED | Failure never blocks R1 discovery. |
