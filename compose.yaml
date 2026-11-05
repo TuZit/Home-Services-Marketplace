@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: docker.io/library/postgres:16
+    container_name: hsm-postgres
+    environment:
+      POSTGRES_DB: hsm
+      POSTGRES_USER: hsm
+      POSTGRES_PASSWORD: hsm
+    ports:
+      - "5432:5432"
+    volumes:
+      - hsm_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hsm -d hsm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  hsm_pgdata:
