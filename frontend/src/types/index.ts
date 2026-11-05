@@ -1,45 +1,18 @@
-// Shared DTO types matching the backend API contracts (pragmatic shapes where
-// the contract does not spell out every field).
+// Types shaped from the backend API contracts. The customer-facing flow mirrors the
+// request/discovery DTOs exactly; the remaining shapes are pragmatic where an endpoint
+// has not been wired up yet.
 
 export type Role = 'CUSTOMER' | 'PROVIDER' | 'ADMIN'
 
-export type RequestStatus =
-  | 'DRAFT'
-  | 'CONFIRMED'
-  | 'PENDING'
-  | 'PROVIDER_SELECTED'
-  | 'CANCELLED'
-  | 'COMPLETED'
-
-export type QuotationStatus =
-  | 'DRAFT'
-  | 'SUBMITTED'
-  | 'WITHDRAWN'
-  | 'ACCEPTED'
-  | 'REJECTED'
-  | 'EXPIRED'
-
-export type BookingStatus =
-  | 'RESERVED'
-  | 'SCHEDULED'
-  | 'IN_PROGRESS'
-  | 'COMPLETED'
-  | 'CANCELLED'
-
-export interface Money {
-  amount: number
-  currency: string
-}
+export type UserStatus = 'ACTIVE' | 'SUSPENDED'
 
 export interface User {
   id: string
   email: string
-  fullName: string
   role: Role
-  phone?: string | null
-  status?: string
-  verified?: boolean
-  createdAt?: string
+  status?: UserStatus
+  /** Only present on the customer profile endpoint, not on the auth session user. */
+  fullName?: string | null
 }
 
 export interface AuthResponse {
@@ -47,81 +20,146 @@ export interface AuthResponse {
   user: User
 }
 
+export interface Money {
+  amount: number
+  currency: string
+}
+
+// ------------------------------------------------------------------ catalogue
+
 export interface ServiceCategory {
   id: string
   name: string
-  slug?: string
+  slug: string
   description?: string | null
-  iconUrl?: string | null
   active: boolean
-  serviceCount?: number
 }
 
 export interface Service {
   id: string
   categoryId: string
   name: string
+  slug: string
   description?: string | null
-  price?: Money
-  basePrice?: Money
-  durationMinutes?: number | null
   active: boolean
 }
 
+export interface GeoArea {
+  code: string
+  name: string
+  type: 'province' | 'district'
+  parentCode?: string | null
+}
+
+// --------------------------------------------------------------- address book
+
 export interface Address {
   id: string
-  line1: string
-  line2?: string | null
-  city: string
-  state?: string | null
-  postalCode?: string | null
-  country: string
-  latitude?: number | null
-  longitude?: number | null
   label?: string | null
+  addressLine: string
+  areaCode?: string | null
+  isDefault: boolean
+}
+
+export interface AddressInput {
+  label: string
+  addressLine: string
+  areaCode: string
+  isDefault?: boolean
+}
+
+export interface CustomerProfile {
+  id: string
+  fullName?: string | null
+  phone?: string | null
+}
+
+// ------------------------------------------------------------ service requests
+
+export type RequestStatus =
+  | 'DRAFT'
+  | 'CONFIRMED'
+  | 'PROVIDERS_FOUND'
+  | 'PROVIDER_SELECTED'
+  | 'CANCELLED'
+
+/** Immutable content snapshot attached to a request. */
+export interface RequestDetails {
+  version: number
+  categoryId?: string | null
+  serviceId?: string | null
+  description?: string | null
+  addressSnapshot?: string | null
+  areaCode?: string | null
+  preferredStart?: string | null
+  preferredEnd?: string | null
+  budgetAmount?: number | null
+  budgetCurrency?: string | null
 }
 
 export interface ServiceRequest {
   id: string
-  customerId?: string
-  categoryId?: string
-  serviceId: string
-  service?: Service
-  status: RequestStatus | string
-  title: string
-  description: string
-  address?: Address
-  addressId?: string
-  preferredDate?: string | null
-  preferredTime?: string | null
-  budget?: Money
-  version?: number
-  confirmedAt?: string | null
+  status: RequestStatus
+  currentVersion: number
+  details: RequestDetails
   createdAt?: string
   updatedAt?: string
 }
 
+export interface ServiceRequestInput {
+  categoryId: string
+  serviceId: string
+  description: string
+  addressId: string
+  preferredStart: string
+  preferredEnd: string
+  budgetAmount?: number | null
+  budgetCurrency?: string | null
+}
+
+// ------------------------------------------------------------------ discovery
+
+export interface AvailabilityWindow {
+  /** 0 = Sunday .. 6 = Saturday */
+  dayOfWeek: number
+  startTime: string
+  endTime: string
+}
+
 export interface EligibleProvider {
   providerId: string
-  fullName: string
   businessName?: string | null
-  rating?: number
-  reviewCount?: number
-  distanceKm?: number | null
-  basePrice?: Money
-  estimatedPrice?: Money
-  available: boolean
-  nextAvailableSlot?: string | null
-  services?: Service[]
-  verified?: boolean
+  description?: string | null
+  experienceSummary?: string | null
+  reasonCodes?: string[]
+  availabilityWindows?: AvailabilityWindow[]
 }
+
+export interface EligibleProvidersResponse {
+  requestId?: string
+  requestVersion?: number
+  discoveryRunId?: string
+  noResultReason?: string | null
+  providers?: EligibleProvider[]
+}
+
+export interface ProviderSelection {
+  id: string
+  requestId: string
+  providerId: string
+  requestVersion: number
+  status: 'ACTIVE' | 'CONVERTED' | 'RELEASED'
+  selectedAt?: string
+}
+
+// ------------------------------------------- other roles (not yet re-aligned)
 
 export interface Quotation {
   id: string
   requestId: string
   providerId: string
   providerName?: string
-  status: QuotationStatus | string
+  status: string
   amount: Money
   description?: string | null
   validUntil?: string | null
@@ -136,7 +174,7 @@ export interface Booking {
   customerId?: string
   providerId?: string
   providerName?: string
-  status: BookingStatus | string
+  status: string
   scheduledAt?: string | null
   startedAt?: string | null
   completedAt?: string | null

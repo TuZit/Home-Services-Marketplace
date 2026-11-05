@@ -3,6 +3,7 @@ package ptit.home_services_marketplace.catalog;
 import org.springframework.transaction.annotation.Transactional;
 import ptit.home_services_marketplace.catalog.dto.CategoryResponse;
 import ptit.home_services_marketplace.catalog.dto.CategoryUpsertRequest;
+import ptit.home_services_marketplace.catalog.dto.GeoAreaResponse;
 import ptit.home_services_marketplace.catalog.dto.ServiceResponse;
 import ptit.home_services_marketplace.catalog.dto.ServiceUpsertRequest;
 import ptit.home_services_marketplace.shared.audit.AuditService;
@@ -24,13 +25,16 @@ public class CatalogService {
 
     private final ServiceCategoryRepository categoryRepository;
     private final ServiceRepository serviceRepository;
+    private final GeoAreaRepository geoAreaRepository;
     private final AuditService auditService;
 
     public CatalogService(ServiceCategoryRepository categoryRepository,
                           ServiceRepository serviceRepository,
+                          GeoAreaRepository geoAreaRepository,
                           AuditService auditService) {
         this.categoryRepository = categoryRepository;
         this.serviceRepository = serviceRepository;
+        this.geoAreaRepository = geoAreaRepository;
         this.auditService = auditService;
     }
 
@@ -57,6 +61,13 @@ public class CatalogService {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> ApiException.notFound(ErrorCodes.NOT_FOUND, "Service not found"));
         return toServiceResponse(service);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GeoAreaResponse> listActiveAreas() {
+        return geoAreaRepository.findByActiveTrueOrderByCodeAsc().stream()
+                .map(CatalogService::toGeoAreaResponse)
+                .toList();
     }
 
     // ------------------------------------------------------------------- admin writes
@@ -199,6 +210,10 @@ public class CatalogService {
     static ServiceResponse toServiceResponse(Service service) {
         return new ServiceResponse(service.getId(), service.getCategoryId(), service.getName(),
                 service.getSlug(), service.getDescription(), Boolean.TRUE.equals(service.getActive()));
+    }
+
+    static GeoAreaResponse toGeoAreaResponse(GeoArea area) {
+        return new GeoAreaResponse(area.getCode(), area.getName(), area.getType(), area.getParentCode());
     }
 
     private static String requireText(String value, String field) {

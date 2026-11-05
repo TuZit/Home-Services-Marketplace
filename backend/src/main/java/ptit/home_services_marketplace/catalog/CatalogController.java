@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ptit.home_services_marketplace.catalog.dto.CategoryResponse;
+import ptit.home_services_marketplace.catalog.dto.GeoAreaResponse;
 import ptit.home_services_marketplace.catalog.dto.ServiceResponse;
 
 import java.util.List;
@@ -36,5 +37,10 @@ public class CatalogController {
     @GetMapping("/services/{id}")
     public ServiceResponse getService(@PathVariable UUID id) {
         return catalogService.getService(id);
+    }
+
+    @GetMapping("/areas")
+    public List<GeoAreaResponse> listAreas() {
+        return catalogService.listActiveAreas();
     }
 }

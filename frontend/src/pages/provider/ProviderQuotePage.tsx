@@ -65,10 +65,18 @@ export default function ProviderQuotePage() {
 
       {request.data && (
         <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="font-semibold">{request.data.title}</h2>
-          <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{request.data.description}</p>
+          <h2 className="font-semibold">Request details</h2>
+          <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">
+            {request.data.details.description}
+          </p>
           <p className="mt-3 text-sm text-slate-500">
-            Customer budget: {formatMoney(request.data.budget)}
+            Customer budget:{' '}
+            {typeof request.data.details.budgetAmount === 'number'
+              ? formatMoney({
+                  amount: request.data.details.budgetAmount,
+                  currency: request.data.details.budgetCurrency ?? 'VND',
+                })
+              : 'not set'}
           </p>
         </div>
       )}

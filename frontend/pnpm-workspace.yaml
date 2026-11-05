@@ -1,0 +1,6 @@
+# `frontend` is a small pnpm workspace so API codegen can live in its own
+# package. That package pins TypeScript 5.x, which openapi-typescript@7 needs:
+# the app itself compiles with TypeScript 7 (native tsgo), whose module no
+# longer exposes the compiler API openapi-typescript uses.
+packages:
+  - 'tools/*'

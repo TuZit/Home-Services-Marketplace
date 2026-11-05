@@ -1,10 +1,238 @@
 @import "tailwindcss";
 
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/*
+  HomeServices — "Warm Craft" design system.
+  Warm paper neutrals, a deep spruce brand, and a marigold accent.
+  Built in OKLCH so equal lightness steps read as equal.
+*/
+
+@theme {
+  /* Surfaces: warm paper, tinted toward the brand hue */
+  --color-canvas: oklch(0.982 0.006 88);
+  --color-surface: oklch(0.997 0.003 88);
+  --color-surface-2: oklch(0.963 0.008 88);
+  --color-surface-3: oklch(0.936 0.011 86);
+
+  /* Ink: warm near-black, not pure #000 */
+  --color-ink: oklch(0.245 0.019 62);
+  --color-ink-muted: oklch(0.438 0.017 62);
+  --color-ink-faint: oklch(0.556 0.015 62);
+
+  /* Hairlines */
+  --color-line: oklch(0.9 0.009 84);
+  --color-line-strong: oklch(0.826 0.013 84);
+
+  /* Brand: spruce */
+  --color-brand-50: oklch(0.968 0.019 158);
+  --color-brand-100: oklch(0.928 0.037 158);
+  --color-brand-200: oklch(0.862 0.058 158);
+  --color-brand-300: oklch(0.742 0.072 158);
+  --color-brand-400: oklch(0.596 0.079 158);
+  --color-brand-500: oklch(0.478 0.078 158);
+  --color-brand-600: oklch(0.412 0.074 158);
+  --color-brand-700: oklch(0.348 0.066 158);
+  --color-brand-800: oklch(0.292 0.053 158);
+  --color-brand-900: oklch(0.24 0.041 158);
+
+  /* Accent: marigold */
+  --color-accent-50: oklch(0.974 0.024 84);
+  --color-accent-100: oklch(0.947 0.046 84);
+  --color-accent-200: oklch(0.902 0.078 80);
+  --color-accent-300: oklch(0.854 0.108 76);
+  --color-accent-400: oklch(0.806 0.134 72);
+  --color-accent-500: oklch(0.766 0.146 70);
+  --color-accent-600: oklch(0.688 0.149 64);
+  --color-accent-700: oklch(0.596 0.14 58);
+
+  /* Status roles */
+  --color-success: oklch(0.512 0.112 156);
+  --color-success-soft: oklch(0.958 0.031 156);
+  --color-success-ink: oklch(0.373 0.081 156);
+
+  --color-warning: oklch(0.63 0.14 62);
+  --color-warning-soft: oklch(0.968 0.036 82);
+  --color-warning-ink: oklch(0.44 0.098 58);
+
+  --color-danger: oklch(0.508 0.168 27);
+  --color-danger-soft: oklch(0.958 0.026 25);
+  --color-danger-ink: oklch(0.428 0.146 27);
+
+  /* Focus ring — dark spruce reads against the paper canvas */
+  --color-focus: oklch(0.4 0.082 158);
+
+  /* Type: product sans. Semantic sizes so the app scale is not disturbed. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text",
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  --text-eyebrow: 0.6875rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.11em;
+  --text-eyebrow--font-weight: 600;
+
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.62;
+
+  --text-display-sm: 1.875rem;
+  --text-display-sm--line-height: 1.14;
+  --text-display-sm--letter-spacing: -0.021em;
+  --text-display-sm--font-weight: 640;
+
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.06;
+  --text-display--letter-spacing: -0.028em;
+  --text-display--font-weight: 660;
+
+  /* Edges: tactile, softly rounded, never pill-shaped for controls */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-2xl: 1.5rem;
+
+  /* Depth: flat by default, elevation only when something lifts */
+  --shadow-lift: 0 1px 2px oklch(0.28 0.02 62 / 0.05),
+    0 10px 26px -12px oklch(0.28 0.02 62 / 0.16);
+  --shadow-hover: 0 2px 5px oklch(0.28 0.02 62 / 0.06),
+    0 20px 42px -16px oklch(0.28 0.02 62 / 0.22);
+  --shadow-pop: 0 28px 64px -24px oklch(0.28 0.02 62 / 0.32);
+
+  /* Motion: short, functional, decelerating */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-rise: rise 0.46s var(--ease-out-soft) both;
+  --animate-fade: fade 0.32s var(--ease-out-soft) both;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
 }
 
-body {
-  margin: 0;
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -140% 0;
+  }
+  to {
+    background-position: 240% 0;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  /* Keep the browser's ring, give it room. Never remove it without a replacement. */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-200);
+    color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    /* A frozen spinner reports nothing. Progress indicators keep moving. */
+    .animate-spin,
+    .animate-shimmer {
+      animation-duration: 1.4s !important;
+      animation-iteration-count: infinite !important;
+    }
+  }
+}
+
+/* Focus ring that survives on the dark brand surfaces (footer). */
+@utility focus-on-dark {
+  &:focus-visible {
+    outline-color: var(--color-accent-300);
+  }
+}
+
+/* Warm glow + fine dot grid used behind the catalogue hero. */
+@utility hero-texture {
+  background-image:
+    radial-gradient(
+      42rem 22rem at 12% 6%,
+      color-mix(in oklab, var(--color-accent-200) 55%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      34rem 20rem at 92% 0%,
+      color-mix(in oklab, var(--color-brand-200) 50%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      oklch(0.55 0.014 62 / 0.16) 1px,
+      transparent 1px
+    );
+  background-size: auto, auto, 22px 22px;
+  background-position: center, center, 0 0;
+}
+
+/* Loading placeholder that shimmers across the warm surface. */
+@utility skeleton-sheen {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--color-surface) 85%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 140% 100%;
+  background-repeat: no-repeat;
 }

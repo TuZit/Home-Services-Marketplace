@@ -8,7 +8,6 @@ import { useCategories, useCategoryServices } from '../../api/hooks'
 import Spinner from '../../components/Spinner'
 import ErrorAlert from '../../components/ErrorAlert'
 import { getErrorMessage } from '../../lib/errors'
-import { formatMoney } from '../../lib/format'
 import type { ServiceCategory } from '../../types'
 
 const categorySchema = z.object({
@@ -279,7 +278,7 @@ export default function AdminCatalogPage() {
                 <div>
                   <p className="font-medium">{service.name}</p>
                   <p className="text-sm text-slate-500">
-                    {formatMoney(service.price)} · {service.active ? 'Active' : 'Inactive'}
+                    {service.active ? 'Active' : 'Inactive'}
                   </p>
                 </div>
                 <button

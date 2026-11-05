@@ -8,11 +8,10 @@ export interface LoginInput {
 }
 
 export interface RegisterInput {
-  fullName: string
+  displayName: string
   email: string
   password: string
   role: Role
-  phone?: string
 }
 
 interface AuthState {

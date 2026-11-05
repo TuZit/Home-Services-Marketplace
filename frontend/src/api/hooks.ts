@@ -3,8 +3,10 @@ import { apiClient } from './client'
 import type {
   Address,
   Booking,
+  CustomerProfile,
   DashboardStats,
-  EligibleProvider,
+  EligibleProvidersResponse,
+  GeoArea,
   ProviderProfile,
   Quotation,
   Review,
@@ -37,6 +39,31 @@ export function useService(serviceId: string | undefined) {
   })
 }
 
+export function useAreas() {
+  return useQuery({
+    queryKey: ['areas'],
+    queryFn: async () => (await apiClient.get<GeoArea[]>('/areas')).data,
+    staleTime: 60 * 60 * 1000,
+  })
+}
+
+export function useAddresses() {
+  return useQuery({
+    queryKey: ['addresses'],
+    queryFn: async () => (await apiClient.get<Address[]>('/me/addresses')).data,
+  })
+}
+
+/** The auth session user carries no display name, so customers read it from their profile. */
+export function useCustomerProfile(enabled: boolean) {
+  return useQuery({
+    queryKey: ['customer-profile'],
+    queryFn: async () => (await apiClient.get<CustomerProfile>('/me')).data,
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export function useServiceRequest(id: string | undefined) {
   return useQuery({
     queryKey: ['service-request', id],
@@ -45,12 +72,14 @@ export function useServiceRequest(id: string | undefined) {
   })
 }
 
-export function useEligibleProviders(requestId: string | undefined) {
+/** Discovery only runs while the request is CONFIRMED; the backend rejects every other state. */
+export function useEligibleProviders(requestId: string | undefined, enabled = true) {
   return useQuery({
     queryKey: ['eligible-providers', requestId],
     queryFn: async () =>
-      (await apiClient.get<EligibleProvider[]>(`/service-requests/${requestId}/eligible-providers`)).data,
-    enabled: Boolean(requestId),
+      (await apiClient.get<EligibleProvidersResponse>(`/service-requests/${requestId}/eligible-providers`))
+        .data,
+    enabled: Boolean(requestId) && enabled,
   })
 }
 
@@ -67,13 +96,6 @@ export function useBooking(id: string | undefined) {
     queryKey: ['booking', id],
     queryFn: async () => (await apiClient.get<Booking>(`/bookings/${id}`)).data,
     enabled: Boolean(id),
-  })
-}
-
-export function useAddresses() {
-  return useQuery({
-    queryKey: ['addresses'],
-    queryFn: async () => (await apiClient.get<Address[]>('/me/addresses')).data,
   })
 }
 

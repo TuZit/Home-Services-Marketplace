@@ -59,12 +59,12 @@ export default function AdminProvidersPage() {
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-1 text-xs font-medium ${
-                        provider.verified
+                        provider.status === 'ACTIVE'
                           ? 'bg-green-100 text-green-700'
                           : 'bg-amber-100 text-amber-700'
                       }`}
                     >
-                      {provider.verified ? 'Verified' : provider.status ?? 'Pending'}
+                      {provider.status ?? 'Pending'}
                     </span>
                   </td>
                   <td className="px-4 py-3">
