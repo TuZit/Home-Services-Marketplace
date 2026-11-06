@@ -16,5 +16,52 @@ services:
       timeout: 5s
       retries: 10
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    container_name: hsm-elasticsearch
+    profiles: ["elk"]
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      bootstrap.memory_lock: "false"
+    ports:
+      - "9200:9200"
+    volumes:
+      - hsm_esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.3
+    container_name: hsm-logstash
+    profiles: ["elk"]
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      LS_JAVA_OPTS: "-Xms256m -Xmx256m"
+    volumes:
+      - ./infra/elk/logstash/pipeline/hsm-logs.conf:/usr/share/logstash/pipeline/hsm-logs.conf:ro
+      - ./infra/elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./infra/elk/logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./backend/logs:/var/log/hsm:ro
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.3
+    container_name: hsm-kibana
+    profiles: ["elk"]
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+
 volumes:
   hsm_pgdata:
+  hsm_esdata:

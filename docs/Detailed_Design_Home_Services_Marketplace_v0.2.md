@@ -245,6 +245,8 @@ Access JWT in memory, 5–15 minute target lifetime TBC. Refresh cookie Secure/H
 ## 13. Observability
 Each request carries `traceId`. Audit events include actor/action/entity/before-after summary/reason. Metrics include slot reservation conflict, idempotency replay/conflict, payment duplicate prevention, provider eligibility exclusion counts and AI degradation.
 
+Logs are centralized via an ELK stack (Elasticsearch + Logstash + Kibana). The backend writes structured JSON lines (Spring Boot structured logging, `logstash` format) to `backend/logs/hsm-backend.json`; every line carries the request `traceId`, actor (`userId`/`role`) and access fields (`http_method`/`http_status`/`http_duration_ms`). Logstash tails the file and indexes daily `hsm-logs-YYYY.MM.dd` indices; Kibana exposes a `hsm-logs-*` data view and an "HSM Observability" dashboard. A 30-day ILM policy governs retention. Logging is fail-open — an ELK outage never affects transactions. Run and validation steps: `infra/elk/README.md` and `specs/002-elk-logging/quickstart.md`.
+
 ## 14. Test Design
 - Unit: every eligibility rule; request/quotation/booking state transitions; payment/review eligibility.
 - DB/Testcontainers: GiST overlapping reservation race using two concurrent transactions; unique booking/payment/review; active quote constraint; idempotency concurrency.

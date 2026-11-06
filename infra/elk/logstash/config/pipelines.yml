@@ -1,0 +1,2 @@
+- pipeline.id: hsm-logs
+  path.config: "/usr/share/logstash/pipeline/hsm-logs.conf"

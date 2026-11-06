@@ -27,3 +27,5 @@ Document frequently used workflows and commands here.
 - [Detailed Design](Detailed_Design_Home_Services_Marketplace_v0.2.md)
 - [Data Model](Data_Model_Home_Services_Marketplace_v0.1.md)
 - [Use Case, User Story & Business Flow Diagrams](Home_Services_Marketplace_Use_Case_User_Story_Diagrams_v0.1.md)
+- [ELK Logging Guide](docs/ELK_Logging_Guide.md)
+- [Backend Manual Coding Guide](docs/Backend_Manual_Coding_Guide.md)

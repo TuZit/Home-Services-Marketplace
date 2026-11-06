@@ -20,10 +20,24 @@ server:
   port: 8080
 
 logging:
+  file:
+    name: ${LOG_FILE:logs/hsm-backend.json}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{traceId:-}] [%X{userId:-}] %logger{36} - %msg%n"
+  structured:
+    format:
+      file: logstash
+    json:
+      add:
+        app: hsm-backend
+        environment: ${APP_ENV:local}
   level:
     ptit.home_services_marketplace: INFO
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      total-size-cap: 1GB
+      max-history: 7
 
 app:
   jwt:
